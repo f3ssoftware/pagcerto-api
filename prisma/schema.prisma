@@ -83,11 +83,12 @@ model Organization {
 
 model Processor {
   id                     String                  @id @default(uuid())
-  name                   String
-  enabled                 Boolean
+  name                   String                  @unique
+  enabled                Boolean
   organizationProcessors OrganizationProcessor[]
   checkouts              Checkout[]              @relation(name: "ProcessorToCheckout")
 }
+
 
 model OrganizationProcessor {
   id             String       @id @default(uuid())
