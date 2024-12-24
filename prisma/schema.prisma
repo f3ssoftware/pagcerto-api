@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CostCenter {
+  id             String  @id @default(uuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  invoices       Invoice[]
+  transactions   Transaction[]
+}
+
+model Invoice {
+  id           String            @id @default(uuid())
+  startDate    DateTime
+  endDate      DateTime
+  settled      Boolean
+  costCenterId String
+  referenceId  String
+  costCenter   CostCenter        @relation(fields: [costCenterId], references: [id])
+  history      InvoiceHistory[]
+  transactions Transaction[]
+  checkouts    Checkout[]
+}
+
+model InvoiceHistory {
+  id            String        @id @default(uuid())
+  invoiceId     String
+  invoiceStatus InvoiceStatus
+  invoice       Invoice       @relation(fields: [invoiceId], references: [id])
+}
+
+model Transaction {
+  id              String        @id @default(uuid())
+  description     String
+  amount          Int
+  gross           Int
+  net             Int
+  fee             Int
+  currency        Currency
+  referenceId     String
+  createdAt       DateTime      @default(now())
+  dueDate         DateTime
+  transactionMaster String?
+  costCenterId    String
+  invoiceId       String
+  costCenter      CostCenter    @relation(fields: [costCenterId], references: [id])
+  invoice         Invoice       @relation(fields: [invoiceId], references: [id])
+  history         TransactionHistory[]
+}
+
+model TransactionHistory {
+  id               String            @id @default(uuid())
+  transactionId    String
+  transactionStatus TransactionStatus
+  createdAt        DateTime          @default(now())
+  transaction      Transaction       @relation(fields: [transactionId], references: [id])
+}
+
+model Checkout {
+  id                    String       @id @default(uuid())
+  availablePaymentMethods Json
+  products              Json
+  maxInstallments       Int
+  processorId           String
+  invoiceId             String
+  invoice               Invoice      @relation(fields: [invoiceId], references: [id])
+  processor             Processor    @relation(fields: [processorId], references: [id])
+}
+
+model Organization {
+  id            String          @id @default(uuid())
+  name          String
+  costCenters   CostCenter[]
+  processors    OrganizationProcessor[]
+}
+
+model Processor {
+  id                     String                  @id @default(uuid())
+  name                   String
+  organizationProcessors OrganizationProcessor[]
+}
+
+model OrganizationProcessor {
+  id             String       @id @default(uuid())
+  processorId    String
+  organizationId String
+  processor      Processor    @relation(fields: [processorId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+enum InvoiceStatus {
+  OPEN
+  PENDING_PAYMENT
+  SETTLED
+  OVERDUE
+}
+
+enum TransactionStatus {
+  CREATED
+  PENDING
+  CANCELLED
+  FINISHED
+  LATE_FINISHED
+}
+
+enum Processor {
+  PAGSEGURO
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+}
+
+enum FeeInvoicingMethod {
+  SALE_INCLUDED
+  INVOICE_DEDUCTED
+}
+
+enum Currency {
+  BRL
+  USD
+  GBP
+  BTC
+  USDT
+}

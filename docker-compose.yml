@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: pagcerto.postgres.db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pagcerto
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./initdb/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U admin -d pagcerto']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - f3ssoftware-network
+
+  pagcerto-api:
+    container_name: pagcerto-api
+    build:
+      context: .
+      target: local
+      dockerfile: ./Dockerfile
+    command: npm run start:local
+    ports:
+      - 3000:3000
+    networks:
+      - f3ssoftware-network
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - NODE_ENV=local
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+
+networks:
+  f3ssoftware-network:
+    driver: bridge
+
+volumes:
+  pgdata:
