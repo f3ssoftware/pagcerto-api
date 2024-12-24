@@ -71,7 +71,7 @@ model Checkout {
   processorId           String
   invoiceId             String
   invoice               Invoice      @relation(fields: [invoiceId], references: [id])
-  processor             Processor    @relation(fields: [processorId], references: [id])
+  processor             Processor    @relation(fields: [processorId], references: [id], name: "ProcessorToCheckout")
 }
 
 model Organization {
@@ -84,7 +84,9 @@ model Organization {
 model Processor {
   id                     String                  @id @default(uuid())
   name                   String
+  enabled                 Boolean
   organizationProcessors OrganizationProcessor[]
+  checkouts              Checkout[]              @relation(name: "ProcessorToCheckout")
 }
 
 model OrganizationProcessor {
@@ -108,10 +110,6 @@ enum TransactionStatus {
   CANCELLED
   FINISHED
   LATE_FINISHED
-}
-
-enum Processor {
-  PAGSEGURO
 }
 
 enum PaymentMethod {

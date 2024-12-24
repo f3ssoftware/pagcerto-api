@@ -19,27 +19,27 @@ services:
     networks:
       - f3ssoftware-network
 
-  pagcerto-api:
-    container_name: pagcerto-api
-    build:
-      context: .
-      target: local
-      dockerfile: ./Dockerfile
-    command: npm run start:local
-    ports:
-      - 3000:3000
-    networks:
-      - f3ssoftware-network
-    volumes:
-      - .:/usr/src/app
-    environment:
-      - NODE_ENV=local
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 1024M
+  # pagcerto-api:
+  #   container_name: pagcerto-api
+  #   build:
+  #     context: .
+  #     target: local
+  #     dockerfile: ./Dockerfile
+  #   command: npm run start:local
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - f3ssoftware-network
+  #   volumes:
+  #     - .:/usr/src/app
+  #   environment:
+  #     - NODE_ENV=local
+  #   restart: unless-stopped
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.50'
+  #         memory: 1024M
 
 networks:
   f3ssoftware-network:
