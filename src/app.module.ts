@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ClientModule } from './client/client.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { OrganizationModule } from './organization/organization.module';
+import { CostCenterModule } from './cost-center/cost-center.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { OrganizationModule } from './organization/organization.module';
     ClientModule,
     TransactionModule,
     OrganizationModule,
+    CostCenterModule,
   ],
   controllers: [],
   providers: [AppService],
