@@ -49,9 +49,9 @@ model Transaction {
   dueDate         DateTime
   transactionMaster String?
   costCenterId    String
-  invoiceId       String
+  invoiceId       String?
   costCenter      CostCenter    @relation(fields: [costCenterId], references: [id])
-  invoice         Invoice       @relation(fields: [invoiceId], references: [id])
+  invoice         Invoice?       @relation(fields: [invoiceId], references: [id])
   history         TransactionHistory[]
 }
 
