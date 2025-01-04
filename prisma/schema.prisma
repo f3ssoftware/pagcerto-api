@@ -51,9 +51,11 @@ model Transaction {
   costCenterId    String
   invoiceId       String?
   costCenter      CostCenter    @relation(fields: [costCenterId], references: [id])
-  invoice         Invoice?       @relation(fields: [invoiceId], references: [id])
+  invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
   history         TransactionHistory[]
+  fee_composition Json?
 }
+
 
 model TransactionHistory {
   id               String            @id @default(uuid())
