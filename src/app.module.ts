@@ -6,6 +6,7 @@ import { ClientModule } from './client/client.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { OrganizationModule } from './organization/organization.module';
 import { CostCenterModule } from './cost-center/cost-center.module';
+import { CheckoutModule } from './checkout/checkout.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CostCenterModule } from './cost-center/cost-center.module';
     TransactionModule,
     OrganizationModule,
     CostCenterModule,
+    CheckoutModule,
   ],
   controllers: [],
   providers: [AppService],
