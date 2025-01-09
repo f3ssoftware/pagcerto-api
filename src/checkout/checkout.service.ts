@@ -74,4 +74,6 @@ export class CheckoutService {
     }
     return this.prisma.checkout.delete({ where: { id } });
   }
+
+  async pay(id: string, payDto: PayCheckoutDto) {}
 }
