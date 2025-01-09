@@ -1,85 +1,85 @@
 import {
+  IsArray,
+  IsDate,
+  IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
-  IsNumber,
-  IsDateString,
-  IsUUID,
+  ValidateNested,
+  Min,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Currency } from '@prisma/client';
 
-export class CreateTransactionDto {
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty({ description: 'Description of the transaction' })
-  description: string;
+enum TransactionTypeEnum {
+  CREDIT = 'credit',
+  DEBIT = 'debit',
+}
 
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    description: 'Amount in cents of the transaction into the processor',
-  })
-  amount: number;
+enum FeeTypeEnum {
+  LATE_PAYMENT = 'late_payment',
+  FINE = 'fine',
+}
 
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({ description: 'Gross value of the transaction' })
-  gross: number;
+class FeeDto {
+  @ApiProperty({ enum: FeeTypeEnum, description: 'Type of the fee' })
+  @IsEnum(FeeTypeEnum)
+  fee_type: FeeTypeEnum;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({ description: 'Net value of the transaction' })
-  net: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({ description: 'Fee applied to the transaction' })
-  fee: number;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty({ description: 'Currency of the transaction (e.g., USD, BRL)' })
+  @ApiProperty({ enum: Currency, description: 'Currency of the fee' })
+  @IsEnum(Currency)
   currency: Currency;
 
-  @IsOptional()
+  @ApiProperty({ type: Number, minimum: 1, description: 'Value of the fee' })
+  @IsNumber()
+  @Min(1)
+  value: number;
+
+  @ApiProperty({ type: String, description: 'Description of the fee' })
   @IsString()
-  @ApiProperty({
-    description: 'Reference ID for the transaction',
-    required: false,
-  })
-  referenceId?: string;
-
   @IsNotEmpty()
-  @IsDateString()
-  @ApiProperty({ description: 'Creation date of the transaction' })
-  createdAt: string;
+  description: string;
+}
 
-  @IsOptional()
-  @IsDateString()
-  @ApiProperty({ description: 'Due date of the transaction', required: false })
-  dueDate?: string;
-
-  @IsOptional()
-  @IsUUID()
+export class CreateTransactionDto {
   @ApiProperty({
-    description: 'Transaction master ID, if applicable',
-    required: false,
+    type: Number,
+    minimum: 0.01,
+    description: 'Transaction value',
   })
-  transactionMaster?: string;
+  @IsNumber()
+  @Min(0.01)
+  value: number;
 
-  @IsNotEmpty()
-  @IsUUID()
   @ApiProperty({
-    description: 'Cost center ID associated with the transaction',
+    enum: TransactionTypeEnum,
+    description: 'Type of the transaction',
   })
-  costCenterId: string;
+  @IsEnum(TransactionTypeEnum)
+  transaction_type: TransactionTypeEnum;
 
+  @ApiProperty({ type: Date, description: 'Due date for the transaction' })
+  @IsDate()
+  @Type(() => Date)
+  due_date: Date;
+
+  @ApiPropertyOptional({
+    type: Date,
+    description: 'Effective payment date (optional)',
+  })
   @IsOptional()
-  @IsUUID()
+  @IsDate()
+  @Type(() => Date)
+  effective_payment_date?: Date;
+
   @ApiProperty({
-    description: 'Invoice ID associated with the transaction',
-    required: false,
+    type: [FeeDto],
+    description: 'List of fees associated with the transaction',
   })
-  invoiceId?: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FeeDto)
+  fee: FeeDto[];
 }
