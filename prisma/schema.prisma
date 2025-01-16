@@ -127,6 +127,7 @@ enum TransactionStatus {
 enum PaymentMethod {
   PIX
   CREDIT_CARD
+  CRYPTO
 }
 
 enum FeeInvoicingMethod {
