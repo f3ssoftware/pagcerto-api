@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray, ArrayNotEmpty, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  ArrayNotEmpty,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { Customer } from './pagseguro-customer.dto';
 import { Item } from './pagseguro-item.dto';

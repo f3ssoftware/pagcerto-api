@@ -5,7 +5,7 @@ export class Phone {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  type: string;
+  type?: string;
 
   @ApiProperty()
   @IsString()
